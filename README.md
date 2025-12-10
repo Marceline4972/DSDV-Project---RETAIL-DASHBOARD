@@ -7,9 +7,22 @@ The goal is to explore, filter, and visualize retail / shopping behaviors, such 
 
 - Source: [Customer Shopping Dataset (Kaggle)](https://www.kaggle.com/datasets/mehmettahiraslan/customer-shopping-dataset)
 
+## ⚙️ Requirements
+
+Before running the project, make sure your system has:
+
+### Node.js (v18 or higher)
+Download: https://nodejs.org/
+
+Check installation:
+
+```bash
+node -v
+```
+
 ### 1️⃣ Clone the repository
 ```bash
-git clone https://github.com/Marceline4972/DSDV-Project---RETAIL-DASHBOARD
+git https://github.com/Marceline4972/DSDV-Project---RETAIL-DASHBOARD.git
 cd DSDV-Project---RETAIL-DASHBOARD
 ```
 2️⃣ Install dependencies
