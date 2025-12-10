@@ -5,4 +5,24 @@ The goal is to explore, filter, and visualize retail / shopping behaviors, such 
 
 ## Dataset
 
-- Source: [Customer Shopping Dataset (Kaggle)](https://www.kaggle.com/datasets/mehmettahiraslan/customer-shopping-dataset)  
+- Source: [Customer Shopping Dataset (Kaggle)](https://www.kaggle.com/datasets/mehmettahiraslan/customer-shopping-dataset)
+
+### 1️⃣ Clone the repository
+```bash
+git clone https://github.com/Marceline4972/DSDV-Project---RETAIL-DASHBOARD
+cd DSDV-Project---RETAIL-DASHBOARD
+```
+2️⃣ Install dependencies
+```bash
+npm install
+```
+
+3️⃣ Start the development server
+```bash
+npm run dev
+```
+
+The project will run at:
+```bash
+http://localhost:5173
+```

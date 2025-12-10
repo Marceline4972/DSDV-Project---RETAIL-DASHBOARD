@@ -1,0 +1,28 @@
+{
+  "name": "dsdv-project---retail-dashboard",
+  "version": "1.0.0",
+  "description": "This project is a data visualization dashboard built on top of the **Customer Shopping Dataset** (from Kaggle).  \r The goal is to explore, filter, and visualize retail / shopping behaviors, such as number of purchases, trends over time, customer segments, etc.",
+  "main": "app.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Marceline4972/DSDV-Project---RETAIL-DASHBOARD.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Marceline4972/DSDV-Project---RETAIL-DASHBOARD/issues"
+  },
+  "homepage": "https://github.com/Marceline4972/DSDV-Project---RETAIL-DASHBOARD#readme",
+  "dependencies": {
+    "d3": "^7.9.0"
+  },
+  "devDependencies": {
+    "vite": "^7.2.7"
+  }
+}
