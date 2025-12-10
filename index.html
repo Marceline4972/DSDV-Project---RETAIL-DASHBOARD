@@ -9,19 +9,44 @@
 </head>
 
 <body>
-    <header>
-        <h1>Retail Dashboard</h1>
-    </header>
+    <div class="container">
 
-    <main>
+        <!-- FILTER BAR -->
+        <aside id="filter-bar">
+            <h2>Filters</h2>
+        </aside>
 
-    </main>
+        <!-- MAIN VISUALIZATION AREA -->
+        <main id="content">
 
-    <footer>
-        <p>Data source: Customer Shopping Dataset (Kaggle)</p>
-    </footer>
+            <section class="chart-section" id="chart1">
+                <h2>Line Chart</h2>
+                <select id="freqSelect">
+                    <option value="daily">Daily</option>
+                    <option value="weekly">Weekly</option>
+                    <option value="monthly">Monthly</option>
+                    <option value="quarterly">Quarterly</option>
+                </select>
+                <div id="line-chart"></div>
+            </section>
 
-    <script src="app.js"></script>
+            <section class="chart-section" id="chart2">
+                <h2>Area Chart (Preview Area)</h2>
+                <div class="chart-container" id="areachart-container"></div>
+            </section>
+
+            <section class="chart-section" id="chart3">
+                <h2>Sankey Diagram (Preview Area)</h2>
+                <div class="chart-container" id="sankey-container"></div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- App Scripts -->
+    <!-- <script src="filterBar.js"></script> -->
+    <!-- <script src="lineChart.js"></script> -->
+    <script type="module" src="app.js"></script>
 </body>
 
 </html>

@@ -1,0 +1,113 @@
+/* -------------------- Global Layout -------------------- */
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f7f7f7;
+}
+
+.container {
+    display: flex;
+    height: 100vh;
+}
+
+/* -------------------- Left Filter Bar -------------------- */
+#filter-bar {
+    width: 260px;
+    background: #ffffff;
+    border-right: 1px solid #ddd;
+    padding: 20px;
+    overflow-y: auto;
+}
+
+#filter-bar h2 {
+    margin-top: 0;
+}
+
+/* -------------------- Main Content -------------------- */
+#content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 30px;
+}
+
+.chart-section {
+    margin-bottom: 120px;
+}
+
+.chart-container {
+    width: 100%;
+    height: 400px;
+    background: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+}
+
+/* --------------------------------------------------------
+   DATE SLIDER STYLING (BRUSH)
+   -------------------------------------------------------- */
+#date-section {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+#date-slider {
+    padding: 12px 0;
+}
+
+/* Axis */
+#date-slider .tick text {
+    fill: #374151; /* gray-700 */
+    font-size: 11px;
+}
+
+#date-slider .domain,
+#date-slider .tick line {
+    stroke: #d1d5db; /* gray-300 */
+}
+
+/* Track softly rounded */
+#date-slider rect {
+    rx: 4;
+}
+
+/* -------------------- Gradient Range Fill -------------------- */
+.brush .selection {
+    fill: url(#brushGradient);
+    stroke: none;
+    rx: 6;
+}
+
+/* Gradient colors (blue → green) */
+svg defs linearGradient#brushGradient stop:first-child {
+    stop-color: #3b82f6 !important; /* blue-500 */
+}
+svg defs linearGradient#brushGradient stop:last-child {
+    stop-color: #22c55e !important; /* green-500 */
+}
+
+/* -------------------- Handles -------------------- */
+.brush .handle {
+    fill: #ffffff;
+    stroke: #2563eb; /* blue-600 */
+    stroke-width: 2px;
+    rx: 4;
+    ry: 4;
+    cursor: ew-resize;
+    filter: drop-shadow(0 1px 3px rgba(0,0,0,0.35));
+    transition: transform 0.2s ease, stroke 0.2s ease;
+}
+
+.brush .handle:hover {
+    transform: scale(1.15);
+    stroke: #1d4ed8; /* darker blue */
+}
+
+/* -------------------- Date Inputs -------------------- */
+#date-section input[type="date"] {
+    padding: 6px 12px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 14px;
+    width: 160px;
+}
