@@ -1,6 +1,7 @@
 import * as d3 from "d3";
 import { createFilterBar } from "./components/filterBar.js";
 import { initLineChart, drawLineChart } from "./charts/lineChart.js";
+import { initSankeyDiagram, drawSankeyDiagram } from "./charts/sankeyDiagram.js";
 
 let rawData = [];
 let filteredData = [];
@@ -14,8 +15,8 @@ let filters = {
     ageRange: [null, null]
 };
 
-// Load CSV
-d3.csv("./data/customer_shopping_data.csv").then(data => {
+// LOAD CSV (Vite path)
+d3.csv("/data/customer_shopping_data.csv").then(data => {
 
     rawData = data.map(d => {
         const parts = d.invoice_date.split('/');
@@ -60,26 +61,25 @@ d3.csv("./data/customer_shopping_data.csv").then(data => {
 
     console.log("Loaded data:", rawData);
 
-    // Initialize filter bar
+    // INIT
     createFilterBar(rawData, onFilterChange);
-
-    // Initialize line chart
     initLineChart();
+    initSankeyDiagram();
 
-    // First filter pass
+    // FIRST RENDER
     applyFilters();
 });
 
-// Filtering
+// FILTERING
 function applyFilters() {
     filteredData = rawData.filter(d => {
         if (filters.dateRange[0] && d.invoice_date < filters.dateRange[0]) return false;
         if (filters.dateRange[1] && d.invoice_date > filters.dateRange[1]) return false;
 
-        if (filters.genders.length > 0 && !filters.genders.includes(d.gender)) return false;
-        if (filters.categories.length > 0 && !filters.categories.includes(d.category)) return false;
-        if (filters.paymentMethods.length > 0 && !filters.paymentMethods.includes(d.payment_method)) return false;
-        if (filters.malls.length > 0 && !filters.malls.includes(d.shopping_mall)) return false;
+        if (filters.genders.length && !filters.genders.includes(d.gender)) return false;
+        if (filters.categories.length && !filters.categories.includes(d.category)) return false;
+        if (filters.paymentMethods.length && !filters.paymentMethods.includes(d.payment_method)) return false;
+        if (filters.malls.length && !filters.malls.includes(d.shopping_mall)) return false;
 
         if (filters.ageRange[0] !== null && d.age < filters.ageRange[0]) return false;
         if (filters.ageRange[1] !== null && d.age > filters.ageRange[1]) return false;
@@ -89,12 +89,14 @@ function applyFilters() {
 
     console.log("Filtered data:", filteredData);
 
-    // UPDATE LINE CHART
     drawLineChart(filteredData);
+    drawSankeyDiagram(filteredData);
 }
 
-// Callback from filter bar
+// FILTER CALLBACK
 function onFilterChange(newFilters) {
     filters = { ...filters, ...newFilters };
     applyFilters();
 }
+
+console.log("Filtered data:", filteredData);
