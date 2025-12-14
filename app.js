@@ -1,6 +1,7 @@
 import * as d3 from "d3";
 import { createFilterBar } from "./components/filterBar.js";
 import { initLineChart, drawLineChart } from "./charts/lineChart.js";
+import { initStackedAreaChart, drawStackedAreaChart } from "./charts/stackedArea.js";
 import { initSankeyDiagram, drawSankeyDiagram } from "./charts/sankeyDiagram.js";
 
 let rawData = [];
@@ -63,7 +64,10 @@ d3.csv("/data/customer_shopping_data.csv").then(data => {
 
     // INIT
     createFilterBar(rawData, onFilterChange);
+
+    // Initialize charts
     initLineChart();
+    initStackedAreaChart();
     initSankeyDiagram();
 
     // FIRST RENDER
@@ -90,6 +94,7 @@ function applyFilters() {
     console.log("Filtered data:", filteredData);
 
     drawLineChart(filteredData);
+    drawStackedAreaChart(filteredData);
     drawSankeyDiagram(filteredData);
 }
 
