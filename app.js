@@ -1,6 +1,8 @@
 import * as d3 from "d3";
 import { createFilterBar } from "./components/filterBar.js";
 import { initLineChart, drawLineChart } from "./charts/lineChart.js";
+import { initStackedAreaChart, drawStackedAreaChart } from "./charts/stackedArea.js";
+
 
 let rawData = [];
 let filteredData = [];
@@ -66,6 +68,9 @@ d3.csv("./data/customer_shopping_data.csv").then(data => {
     // Initialize line chart
     initLineChart();
 
+    // Initialize Stacked area
+    initStackedAreaChart();
+
     // First filter pass
     applyFilters();
 });
@@ -91,6 +96,10 @@ function applyFilters() {
 
     // UPDATE LINE CHART
     drawLineChart(filteredData);
+
+    // UPDATE STACKED AREA 
+    drawStackedAreaChart(filteredData);
+
 }
 
 // Callback from filter bar

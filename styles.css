@@ -111,3 +111,57 @@ svg defs linearGradient#brushGradient stop:last-child {
     font-size: 14px;
     width: 160px;
 }
+
+
+/* --------------------- Mode Switch ------------------- */
+.mode-switch {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+    padding: 10px 0 16px 0;
+    border-bottom: 1px solid #e6e6e6;
+    margin-bottom: 16px;
+}
+
+.switch-label { 
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+}
+
+.switch-option {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.switch-option input[type="radio"] {
+    accent-color: #007bff;
+}
+
+/*----------------- Category Filters --------------------*/
+.category-filters {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 14px;
+}
+
+.category-filters label {
+    font-size: 14px;
+    margin-bottom: 6px;
+    font-weight: 500;
+}
+
+#areaCategorySelect {
+    width: 240px;
+    height: 90px;
+    padding: 6px;
+    border-radius: 6px;
+    border: 1px solid #d1d1d1;
+    font-size: 14px;
+    background: #fafafa;
+    align-items: center;
+}

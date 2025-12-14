@@ -31,7 +31,36 @@
             </section>
 
             <section class="chart-section" id="chart2">
-                <h2>Area Chart (Preview Area)</h2>
+                
+                <h2>Stacked Area Chart</h2>
+
+                <!-- Mode Switch -->
+                <div class="mode-switch">
+                    <label class="switch-label">Mode:</label>
+
+                    <label class="switch-option">
+                        <input type="radio" name="areaMode" value="contribution" checked>
+                        <span>Client Contribution</span>
+                    </label>
+
+                    <label class="switch-option">
+                        <input type="radio" name="areaMode" value="income">
+                        <span>Total Income</span>
+                    </label>
+                </div>
+
+                <!-- Categories Filters-->
+                <div class="category-filters">
+                    <label>Select Categories:</label>
+                    <select id="areaCategorySelect" multiple size="4">
+                        <option value="electronics">Electronics</option>
+                        <option value="fashion">Fashion</option>
+                        <option value="grocery">Grocery</option>
+                        <option value="beauty"> Beauty</option>
+                    </select>
+                </div>
+
+                <!-- Main Chart Area -->
                 <div class="chart-container" id="areachart-container"></div>
             </section>
 
@@ -46,6 +75,7 @@
     <!-- App Scripts -->
     <!-- <script src="filterBar.js"></script> -->
     <!-- <script src="lineChart.js"></script> -->
+    <!-- <Script src="stackedArea.js"></script--> 
     <script type="module" src="app.js"></script>
 </body>
 
