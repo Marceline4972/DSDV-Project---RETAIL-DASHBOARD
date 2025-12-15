@@ -8,9 +8,11 @@ export function createFilterBar(data, onChangeCallback) {
         console.error("createFilterBar: #filter-bar not found");
         return;
     }
-    container.innerHTML = "";
 
-    // Extract unique values
+    // ---------------------------------------------------------
+    // 1.DATA PROCESSING
+    // ---------------------------------------------------------
+    
     const genders = [...new Set(data.map(d => d.gender).filter(Boolean))].sort();
     const categories = [...new Set(data.map(d => d.category).filter(Boolean))].sort();
     const payments = [...new Set(data.map(d => d.payment_method).filter(Boolean))].sort();
@@ -24,7 +26,6 @@ export function createFilterBar(data, onChangeCallback) {
         .map(d => d.invoice_date)
         .filter(d => d instanceof Date && !isNaN(d.getTime()));
 
-    // Fallbacks in case dataset has no valid dates
     const fallbackEnd = new Date();
     const fallbackStart = new Date(fallbackEnd);
     fallbackStart.setMonth(fallbackEnd.getMonth() - 6);
@@ -37,84 +38,99 @@ export function createFilterBar(data, onChangeCallback) {
         return d.toISOString().slice(0, 10);
     }
 
-    // -----------------------------
-    // Build FILTER UI
-    // -----------------------------
-    container.innerHTML = `
-        <h2>Filters</h2>
-
-        <div class="filter-section" id="date-section">
-            <h3>Date Range</h3>
-            <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
-                <div style="display:flex; flex-direction:column;">
-                    <label for="start-date" style="font-size:12px">Start</label>
-                    <input type="date" id="start-date" value="${toInputDateString(minDateObj)}">
-                </div>
-                <div style="display:flex; flex-direction:column;">
-                    <label for="end-date" style="font-size:12px">End</label>
-                    <input type="date" id="end-date" value="${toInputDateString(maxDateObj)}">
-                </div>
-            </div>
-
-            <div id="date-slider" style="margin-top:10px;"></div>
-        </div>
-
-        <div class="filter-section">
-            <h3>Gender</h3>
-            ${genders.map(g => `<label><input type="checkbox" class="filter-gender" value="${escapeHtml(g)}"> ${escapeHtml(g)}</label><br>`).join("")}
-        </div>
-
-        <div class="filter-section">
-            <h3>Category</h3>
-            ${categories.map(c => `<label><input type="checkbox" class="filter-category" value="${escapeHtml(c)}"> ${escapeHtml(c)}</label><br>`).join("")}
-        </div>
-
-        <div class="filter-section">
-            <h3>Payment Method</h3>
-            ${payments.map(p => `<label><input type="checkbox" class="filter-payment" value="${escapeHtml(p)}"> ${escapeHtml(p)}</label><br>`).join("")}
-        </div>
-
-        <div class="filter-section">
-            <h3>Shopping Mall</h3>
-            ${malls.map(m => `<label><input type="checkbox" class="filter-mall" value="${escapeHtml(m)}"> ${escapeHtml(m)}</label><br>`).join("")}
-        </div>
-
-        <div class="filter-section">
-            <h3>Age Range</h3>
-            <input type="number" id="age-min" value="${minAge}" style="width:90px;">
-            <input type="number" id="age-max" value="${maxAge}" style="width:90px;">
-        </div>
-    `;
-
     function escapeHtml(s) {
         return String(s).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;");
     }
 
-    // -----------------------------
-    // Slider (D3 brush)
-    // -----------------------------
-    const sliderDiv = document.getElementById("date-slider");
-    const minSliderWidth = 240;
-    const sliderPadding = 12;
-
-    // state for preventing feedback loops
-    let isSyncing = false;
-
-    // helper to get slider width
-    function getWidth() {
-        const parent = sliderDiv.parentElement;
-        const w = parent ? parent.clientWidth - (sliderPadding * 2) : 320;
-        return Math.max(minSliderWidth, w);
+    function createCheckboxHtml(value, type) {
+        return `
+            <label class="custom-checkbox">
+                <input type="checkbox" class="filter-${type}" value="${escapeHtml(value)}">
+                <span class="checkmark"></span> ${escapeHtml(value)}
+            </label>
+        `;
     }
 
-    // initial render function
-    let svg, x, brush, gBrush, svgHeight = 64, margin = { top: 6, right: 12, bottom: 18, left: 12 };
+    // ---------------------------------------------------------
+    // 2.UI RENDERING
+    // ---------------------------------------------------------
+    container.innerHTML = `
+        <div class="filter-header">
+            <h2><i class="fa-solid fa-filter"></i> Filters</h2>
+            <a href="#" id="btn-reset" class="reset-link">Reset</a>
+        </div>
 
-    function render() {
-        // clear old
+        <div class="filter-group">
+            <h3><i class="fa-regular fa-calendar-days"></i> Date Range</h3>
+            <div class="date-inputs">
+                <div class="input-wrapper">
+                    <label>Start</label>
+                    <input type="date" id="start-date" value="${toInputDateString(minDateObj)}">
+                </div>
+                <div class="input-wrapper">
+                    <label>End</label>
+                    <input type="date" id="end-date" value="${toInputDateString(maxDateObj)}">
+                </div>
+            </div>
+            <div id="date-slider" style="margin-top:10px;"></div>
+        </div>
+
+        <div class="filter-group">
+            <h3><i class="fa-solid fa-user-group"></i> Gender</h3>
+            <div class="checkbox-group">
+                ${genders.map(g => createCheckboxHtml(g, 'gender')).join("")}
+            </div>
+        </div>
+
+        <div class="filter-group">
+            <h3><i class="fa-solid fa-tags"></i> Category</h3>
+            <div class="checkbox-group scrollable-list">
+                ${categories.map(c => createCheckboxHtml(c, 'category')).join("")}
+            </div>
+        </div>
+
+        <div class="filter-group">
+            <h3><i class="fa-regular fa-credit-card"></i> Payment Method</h3>
+            <div class="checkbox-group">
+                ${payments.map(p => createCheckboxHtml(p, 'payment')).join("")}
+            </div>
+        </div>
+
+        <div class="filter-group">
+            <h3><i class="fa-solid fa-building"></i> Shopping Mall</h3>
+            <div class="checkbox-group scrollable-list">
+                ${malls.map(m => createCheckboxHtml(m, 'mall')).join("")}
+            </div>
+        </div>
+
+        <div class="filter-group">
+            <h3><i class="fa-solid fa-cake-candles"></i> Age Range</h3>
+            <div class="age-inputs">
+                <input type="number" id="age-min" value="${minAge}" min="0" max="100">
+                <span>-</span>
+                <input type="number" id="age-max" value="${maxAge}" min="0" max="100">
+            </div>
+        </div>
+    `;
+
+    // ---------------------------------------------------------
+    // 3. LOGIC SLIDER (D3 BRUSH)
+    // ---------------------------------------------------------
+    const sliderDiv = document.getElementById("date-slider");
+    const getWidth = () => {
+        return sliderDiv.parentElement ? sliderDiv.parentElement.clientWidth : 220;
+    };
+    
+    let isSyncing = false;
+
+    let svg, x, brush, gBrush;
+    const svgHeight = 50;
+    const margin = { top: 5, right: 10, bottom: 20, left: 10 };
+
+    function renderSlider() {
         sliderDiv.innerHTML = "";
-
         const width = getWidth();
+
         svg = d3.select(sliderDiv).append("svg")
             .attr("width", width)
             .attr("height", svgHeight)
@@ -125,210 +141,144 @@ export function createFilterBar(data, onChangeCallback) {
             .range([margin.left, width - margin.right])
             .clamp(true);
 
-        // light background track for context
         svg.append("rect")
             .attr("x", margin.left)
-            .attr("y", (svgHeight - margin.bottom) / 2 - 6)
+            .attr("y", (svgHeight - margin.bottom) / 2 - 3)
             .attr("width", width - margin.left - margin.right)
-            .attr("height", 12)
-            .attr("rx", 6)
-            .attr("fill", "#f3f4f6");
+            .attr("height", 6)
+            .attr("rx", 3)
+            .attr("fill", "#e5e7eb");
 
-        // axis (few ticks)
         svg.append("g")
             .attr("transform", `translate(0, ${svgHeight - margin.bottom})`)
-            .call(d3.axisBottom(x).ticks(Math.min(8, Math.ceil(width / 100))));
+            .call(d3.axisBottom(x).ticks(3).tickFormat(d3.timeFormat("%b %y")));
 
         brush = d3.brushX()
-            .extent([[margin.left, margin.top], [width - margin.right, svgHeight - margin.bottom]])
+            .extent([[margin.left, 0], [width - margin.right, svgHeight - margin.bottom]])
             .on("brush end", brushed);
 
         gBrush = svg.append("g")
             .attr("class", "brush")
             .call(brush);
 
-        // rounded corners on selection if present
-        svg.selectAll(".selection").attr("rx", 6).attr("ry", 6);
-
-        // default full selection
         try {
-            const x0 = x(minDateObj);
-            const x1 = x(maxDateObj);
-            gBrush.call(brush.move, [x0, x1]);
-        } catch (err) {
-            // ignore if brush not ready
-            console.warn("brush.move init failed", err);
-        }
+            gBrush.call(brush.move, [x(minDateObj), x(maxDateObj)]);
+        } catch (e) { }
     }
 
-    render();
+    renderSlider();
 
-    // responsive re-render on resize (debounced)
-    let rt;
     window.addEventListener("resize", () => {
-        clearTimeout(rt);
-        rt = setTimeout(() => {
-            try { render(); syncInputsToBrush(); } catch (e) { console.warn(e); }
-        }, 120);
+        renderSlider();
+        syncInputsToBrush();
     });
 
-    // -----------------------------
-    // Utilities: parse + clamp
-    // -----------------------------
+
     function parseSafeDate(val, fallback) {
         if (!val) return fallback;
         const d = new Date(val);
-        if (isNaN(d.getTime())) return fallback;
-        return d;
+        return isNaN(d.getTime()) ? fallback : d;
     }
 
-    function clampToDomain(d) {
-        if (d < minDateObj) return new Date(minDateObj);
-        if (d > maxDateObj) return new Date(maxDateObj);
-        return d;
-    }
-
-    // -----------------------------
-    // Brush handler: slider -> inputs -> filters
-    // -----------------------------
     function brushed(event) {
-        if (isSyncing) return; // prevent feedback loops
-        try {
-            if (!event.selection) return;
-            const [sx, ex] = event.selection;
-            let s = x.invert(sx);
-            let e = x.invert(ex);
+        if (isSyncing || !event.selection) return;
 
-            if (!(s instanceof Date) || isNaN(s)) s = new Date(minDateObj);
-            if (!(e instanceof Date) || isNaN(e)) e = new Date(maxDateObj);
+        const [sx, ex] = event.selection;
+        const s = x.invert(sx);
+        const e = x.invert(ex);
 
-            // ensure ordering
-            if (s > e) { const tmp = s; s = e; e = tmp; }
-
-            s = clampToDomain(s);
-            e = clampToDomain(e);
-
-            // set inputs and call updateFilters directly (no dispatch)
-            isSyncing = true;
-            const startEl = document.getElementById("start-date");
-            const endEl = document.getElementById("end-date");
-            if (startEl && endEl) {
-                startEl.value = toInputDateString(s);
-                endEl.value = toInputDateString(e);
-            }
-
-            // small timeout to allow brush move to finish before clearing flag
-            setTimeout(() => { isSyncing = false; }, 0);
-
-            // call updateFilters to propagate
-            updateFilters();
-        } catch (err) {
-            console.warn("brushed error:", err);
-            isSyncing = false;
+        isSyncing = true;
+        
+        const startEl = document.getElementById("start-date");
+        const endEl = document.getElementById("end-date");
+        
+        if(startEl && endEl) {
+            startEl.value = toInputDateString(s);
+            endEl.value = toInputDateString(e);
         }
+
+        setTimeout(() => { isSyncing = false; }, 0);
+        updateFilters(); 
     }
 
-    // -----------------------------
-    // Inputs -> brush sync
-    // -----------------------------
     function syncInputsToBrush() {
+        if (!gBrush || !x) return;
+        const startEl = document.getElementById("start-date");
+        const endEl = document.getElementById("end-date");
+        
+        const s = parseSafeDate(startEl.value, minDateObj);
+        const e = parseSafeDate(endEl.value, maxDateObj);
+
+        const finalS = s > e ? e : s;
+        const finalE = s > e ? s : e;
+
+        isSyncing = true;
         try {
-            const startEl = document.getElementById("start-date");
-            const endEl = document.getElementById("end-date");
-            if (!startEl || !endEl || !gBrush || !x) return;
-
-            let s = parseSafeDate(startEl.value, minDateObj);
-            let e = parseSafeDate(endEl.value, maxDateObj);
-
-            // ensure ordering + clamp
-            if (s > e) { const tmp = s; s = e; e = tmp; }
-            s = clampToDomain(s);
-            e = clampToDomain(e);
-
-            const sx = x(s);
-            const ex = x(e);
-
-            // prevent triggering brush handler loop
-            isSyncing = true;
-            try {
-                gBrush.call(brush.move, [sx, ex]);
-            } catch (err) {
-                console.warn("brush.move error:", err);
-            }
-            setTimeout(() => { isSyncing = false; }, 0);
-        } catch (err) {
-            console.warn("syncInputsToBrush error:", err);
-            isSyncing = false;
-        }
+            gBrush.call(brush.move, [x(finalS), x(finalE)]);
+        } catch (err) {}
+        setTimeout(() => { isSyncing = false; }, 0);
     }
 
-    // -----------------------------
-    // Filter update logic (same as yours, safe)
-    // -----------------------------
+    // ---------------------------------------------------------
+    // 4. LOGIC UPDATE FILTER
+    // ---------------------------------------------------------
+
     function updateFilters() {
-        try {
-            const startVal = document.getElementById("start-date").value;
-            const endVal = document.getElementById("end-date").value;
+        const startVal = document.getElementById("start-date").value;
+        const endVal = document.getElementById("end-date").value;
+        
+        let s = parseSafeDate(startVal, minDateObj);
+        let e = parseSafeDate(endVal, maxDateObj);
 
-            const s = parseSafeDate(startVal, minDateObj);
-            const e = parseSafeDate(endVal, maxDateObj);
+        if (s > e) { const tmp = s; s = e; e = tmp; }
+        
+        s.setHours(0,0,0,0);
+        e.setHours(23,59,59,999);
 
-            let start = s;
-            let end = e;
-            if (start > end) { const tmp = start; start = end; end = tmp; }
+        const newFilters = {
+            dateRange: [s, e],
+            genders: getValues(".filter-gender"),
+            categories: getValues(".filter-category"),
+            paymentMethods: getValues(".filter-payment"),
+            malls: getValues(".filter-mall"),
+            ageRange: [
+                Number(document.getElementById("age-min").value) || 0,
+                Number(document.getElementById("age-max").value) || 100
+            ]
+        };
 
-            const newFilters = {
-                dateRange: [
-                    new Date(start.getFullYear(), start.getMonth(), start.getDate(), 0, 0, 0),
-                    new Date(end.getFullYear(), end.getMonth(), end.getDate(), 23, 59, 59)
-                ],
-                genders: getValues(".filter-gender"),
-                categories: getValues(".filter-category"),
-                paymentMethods: getValues(".filter-payment"),
-                malls: getValues(".filter-mall"),
-                ageRange: [
-                    NumberOrNull(document.getElementById("age-min").value),
-                    NumberOrNull(document.getElementById("age-max").value)
-                ]
-            };
-
-            onChangeCallback(newFilters);
-        } catch (err) {
-            console.warn("updateFilters error:", err);
-        }
+        onChangeCallback(newFilters);
     }
 
-    function NumberOrNull(v) {
-        const n = Number(v);
-        return isNaN(n) ? null : n;
+    function getValues(selector) {
+        return [...document.querySelectorAll(selector)]
+            .filter(cb => cb.checked)
+            .map(cb => cb.value);
     }
 
-    function getValues(sel) {
-        try {
-            return [...container.querySelectorAll(sel)].filter(x => x.checked).map(x => x.value);
-        } catch {
-            return [];
-        }
-    }
+    // ---------------------------------------------------------
+    // 5. EVENT LISTENERS
+    // ---------------------------------------------------------
 
-    // Attach listeners
-    // For date inputs: sync to brush & update filters
-    const startInput = document.getElementById("start-date");
-    const endInput = document.getElementById("end-date");
+    document.getElementById("start-date").addEventListener("change", () => { syncInputsToBrush(); updateFilters(); });
+    document.getElementById("end-date").addEventListener("change", () => { syncInputsToBrush(); updateFilters(); });
 
-    if (startInput) startInput.addEventListener("change", () => { syncInputsToBrush(); updateFilters(); });
-    if (endInput) endInput.addEventListener("change", () => { syncInputsToBrush(); updateFilters(); });
-
-    // For other inputs/checkboxes: simply trigger updateFilters
-    container.querySelectorAll("input:not(#start-date):not(#end-date)").forEach(inp => {
+    container.querySelectorAll("input:not([type='date'])").forEach(inp => {
         inp.addEventListener("change", updateFilters);
     });
 
-    // initial sync & trigger
-    try {
-        syncInputsToBrush();
-        updateFilters();
-    } catch (err) {
-        console.warn("initial sync error:", err);
+    const btnReset = document.getElementById("btn-reset");
+    if(btnReset) {
+        btnReset.addEventListener("click", (e) => {
+            e.preventDefault();
+            container.querySelectorAll("input[type='checkbox']").forEach(cb => cb.checked = false);
+            document.getElementById("start-date").value = toInputDateString(minDateObj);
+            document.getElementById("end-date").value = toInputDateString(maxDateObj);
+            document.getElementById("age-min").value = minAge;
+            document.getElementById("age-max").value = maxAge;
+            
+            syncInputsToBrush();
+            updateFilters();
+        });
     }
 }

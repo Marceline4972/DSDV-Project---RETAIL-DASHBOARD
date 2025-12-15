@@ -5,79 +5,78 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Retail Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="styles.css" />
 </head>
 
 <body>
     <div class="container">
 
-        <!-- FILTER BAR -->
         <aside id="filter-bar">
-            <h2>Filters</h2>
         </aside>
 
-        <!-- MAIN VISUALIZATION AREA -->
         <main id="content">
+            
+            <header class="dashboard-header">
+                <h1>Customer Shopping Analytics</h1>
+            </header>
 
-            <section class="chart-section" id="chart1">
-                <h2>Line Chart</h2>
-                <select id="freqSelect">
-                    <option value="daily">Daily</option>
-                    <option value="weekly">Weekly</option>
-                    <option value="monthly">Monthly</option>
-                    <option value="quarterly">Quarterly</option>
-                </select>
-                <div id="line-chart"></div>
-            </section>
-
-            <section class="chart-section" id="chart2">
-                
-                <h2>Stacked Area Chart</h2>
-
-                <!-- Mode Switch -->
-                <div class="mode-switch">
-                    <label class="switch-label">Mode:</label>
-
-                    <label class="switch-option">
-                        <input type="radio" name="areaMode" value="contribution" checked>
-                        <span>Client Contribution</span>
-                    </label>
-
-                    <label class="switch-option">
-                        <input type="radio" name="areaMode" value="income">
-                        <span>Total Income</span>
-                    </label>
-                </div>
-
-                <!-- Categories Filters-->
-                <div class="category-filters">
-                    <label>Select Categories:</label>
-                    <select id="areaCategorySelect" multiple size="4">
-                        <option value="electronics">Electronics</option>
-                        <option value="fashion">Fashion</option>
-                        <option value="grocery">Grocery</option>
-                        <option value="beauty"> Beauty</option>
+            <section class="chart-card" id="chart1">
+                <div class="chart-header-simple">
+                    <h2><i class="fa-solid fa-chart-line"></i> Line Chart</h2>
+                    <select id="freqSelect" aria-label="Select frequency for line chart">
+                        <option value="daily">Daily</option>
+                        <option value="weekly">Weekly</option>
+                        <option value="monthly">Monthly</option>
+                        <option value="quarterly">Quarterly</option>
                     </select>
                 </div>
-
-                <!-- Main Chart Area -->
-                <div class="chart-container" id="areachart-container"></div>
+                <div id="line-chart" class="chart-area"></div>
             </section>
 
-            <section class="chart-section" id="chart3">
-                <h2>Sankey Diagram</h2>
-                <p>Visualize the flow from Gender through Categories to Payment Methods</p>
+            <section class="chart-card" id="chart2">
+                <div class="chart-header-simple">
+                    <h2><i class="fa-solid fa-layer-group"></i> Stacked Area Chart</h2>
+                </div>
+                
+                <div class="chart-body">
+                    <div class="mode-switch">
+                        <span class="switch-label">Mode:</span>
+                        <label class="custom-radio">
+                            <input type="radio" name="areaMode" value="contribution" checked>
+                            <span class="radio-mark"></span> Client Contribution
+                        </label>
+                        <label class="custom-radio">
+                            <input type="radio" name="areaMode" value="income">
+                            <span class="radio-mark"></span> Total Income
+                        </label>
+                    </div>
+
+                    <div class="category-filters-area">
+                        <label for="areaCategorySelect">Select Categories:</label>
+                        <select id="areaCategorySelect" multiple size="4">
+                            <option value="electronics">Electronics</option>
+                            <option value="fashion">Fashion</option>
+                            <option value="grocery">Grocery</option>
+                            <option value="beauty">Beauty</option>
+                        </select>
+                    </div>
+
+                    <div class="chart-container" id="areachart-container"></div>
+                </div>
+            </section>
+
+            <section class="chart-card" id="chart3">
+                <div class="chart-header-simple">
+                    <h2><i class="fa-solid fa-project-diagram"></i> Sankey Diagram</h2>
+                </div>
+                <p class="chart-description">Visualize the flow from Gender through Categories to Payment Methods</p>
                 <div class="chart-container" id="sankey-container"></div>
             </section>
 
         </main>
     </div>
 
-    <!-- App Scripts -->
-    <!-- <script src="filterBar.js"></script> -->
-    <!-- <script src="lineChart.js"></script> -->
-    <!-- <Script src="stackedArea.js"></script--> 
     <script type="module" src="app.js"></script>
 </body>
-
 </html>
