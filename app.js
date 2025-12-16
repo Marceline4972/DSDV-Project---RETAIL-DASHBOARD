@@ -16,6 +16,35 @@ let filters = {
     ageRange: [null, null]
 };
 
+// add KPI
+const currencyFormat = new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    maximumFractionDigits: 0
+});
+const numberFormat = new Intl.NumberFormat('en-US');
+
+function updateKPIs(data) {
+    if (!data || data.length === 0) {
+        document.getElementById("kpi-revenue").textContent = "$0";
+        document.getElementById("kpi-orders").textContent = "0";
+        document.getElementById("kpi-customers").textContent = "0";
+        document.getElementById("kpi-avg").textContent = "$0";
+        return;
+    }
+
+    const totalRevenue = d3.sum(data, d => d.price * d.quantity);
+    const uniqueInvoices = new Set(data.map(d => d.invoice_no)).size;
+    const uniqueCustomers = new Set(data.map(d => d.customer_id)).size;
+    const avgOrderValue = uniqueInvoices > 0 ? totalRevenue / uniqueInvoices : 0;
+
+    document.getElementById("kpi-revenue").textContent = currencyFormat.format(totalRevenue);
+    document.getElementById("kpi-orders").textContent = numberFormat.format(uniqueInvoices);
+    document.getElementById("kpi-customers").textContent = numberFormat.format(uniqueCustomers);
+    document.getElementById("kpi-avg").textContent = currencyFormat.format(avgOrderValue);
+}
+
+
 // LOAD CSV (Vite path)
 d3.csv("/data/customer_shopping_data.csv").then(data => {
 
@@ -96,6 +125,7 @@ function applyFilters() {
     drawLineChart(filteredData);
     drawStackedAreaChart(filteredData);
     drawSankeyDiagram(filteredData);
+    updateKPIs(filteredData);
 }
 
 // FILTER CALLBACK

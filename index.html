@@ -13,17 +13,49 @@
     <div class="container">
 
         <aside id="filter-bar">
-        </aside>
+            </aside>
 
         <main id="content">
             
             <header class="dashboard-header">
                 <h1>Customer Shopping Analytics</h1>
+                <p class="dashboard-subtitle">Explore retail behaviors and purchase patterns</p>
             </header>
+
+            <section class="kpi-board">
+                <div class="kpi-card">
+                    <div class="kpi-icon"><i class="fa-solid fa-coins"></i></div>
+                    <div class="kpi-content">
+                        <h3>Total Revenue</h3>
+                        <p id="kpi-revenue">Loading...</p>
+                    </div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-icon"><i class="fa-solid fa-receipt"></i></div>
+                    <div class="kpi-content">
+                        <h3>Total Orders</h3>
+                        <p id="kpi-orders">Loading...</p>
+                    </div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-icon"><i class="fa-solid fa-users"></i></div>
+                    <div class="kpi-content">
+                        <h3>Unique Customers</h3>
+                        <p id="kpi-customers">Loading...</p>
+                    </div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-icon"><i class="fa-solid fa-cart-shopping"></i></div>
+                    <div class="kpi-content">
+                        <h3>Avg. Order Value</h3>
+                        <p id="kpi-avg">Loading...</p>
+                    </div>
+                </div>
+            </section>
 
             <section class="chart-card" id="chart1">
                 <div class="chart-header-simple">
-                    <h2><i class="fa-solid fa-chart-line"></i> Line Chart</h2>
+                    <h2><i class="fa-solid fa-chart-line"></i> Revenue Trends Over Time</h2>
                     <select id="freqSelect" aria-label="Select frequency for line chart">
                         <option value="daily">Daily</option>
                         <option value="weekly">Weekly</option>
@@ -36,7 +68,7 @@
 
             <section class="chart-card" id="chart2">
                 <div class="chart-header-simple">
-                    <h2><i class="fa-solid fa-layer-group"></i> Stacked Area Chart</h2>
+                    <h2><i class="fa-solid fa-layer-group"></i> Spending Power by Age Group</h2>
                 </div>
                 
                 <div class="chart-body">
@@ -68,9 +100,9 @@
 
             <section class="chart-card" id="chart3">
                 <div class="chart-header-simple">
-                    <h2><i class="fa-solid fa-project-diagram"></i> Sankey Diagram</h2>
+                    <h2><i class="fa-solid fa-project-diagram"></i> Customer Journey Flow</h2>
                 </div>
-                <p class="chart-description">Visualize the flow from Gender through Categories to Payment Methods</p>
+                <p class="chart-description">Tracking the path from Gender &rarr; Category &rarr; Payment Method</p>
                 <div class="chart-container" id="sankey-container"></div>
             </section>
 
