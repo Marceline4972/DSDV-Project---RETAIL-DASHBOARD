@@ -16,6 +16,14 @@ let filters = {
     ageRange: [null, null]
 };
 
+const kpiState = {
+    revenue: 0,
+    orders: 0,
+    customers: 0,
+    avg: 0
+};
+
+
 // add KPI
 const currencyFormat = new Intl.NumberFormat('en-US', {
     style: 'currency',
@@ -24,24 +32,102 @@ const currencyFormat = new Intl.NumberFormat('en-US', {
 });
 const numberFormat = new Intl.NumberFormat('en-US');
 
+function animateNumber({ el, from, to, duration = 800, format }) {
+    const interp = d3.interpolateNumber(from, to);
+    const start = performance.now();
+
+    function frame(now) {
+        const t = Math.min((now - start) / duration, 1);
+        el.textContent = format(interp(t));
+        if (t < 1) requestAnimationFrame(frame);
+    }
+
+    requestAnimationFrame(frame);
+}
+
+
 function updateKPIs(data) {
+
+    const revenueEl = document.getElementById("kpi-revenue");
+    const ordersEl = document.getElementById("kpi-orders");
+    const customersEl = document.getElementById("kpi-customers");
+    const avgEl = document.getElementById("kpi-avg");
+
     if (!data || data.length === 0) {
-        document.getElementById("kpi-revenue").textContent = "$0";
-        document.getElementById("kpi-orders").textContent = "0";
-        document.getElementById("kpi-customers").textContent = "0";
-        document.getElementById("kpi-avg").textContent = "$0";
+
+        animateNumber({
+            el: revenueEl,
+            from: kpiState.revenue,
+            to: 0,
+            format: currencyFormat.format
+        });
+
+        animateNumber({
+            el: ordersEl,
+            from: kpiState.orders,
+            to: 0,
+            format: numberFormat.format
+        });
+
+        animateNumber({
+            el: customersEl,
+            from: kpiState.customers,
+            to: 0,
+            format: numberFormat.format
+        });
+
+        animateNumber({
+            el: avgEl,
+            from: kpiState.avg,
+            to: 0,
+            format: currencyFormat.format
+        });
+
+        kpiState.revenue = 0;
+        kpiState.orders = 0;
+        kpiState.customers = 0;
+        kpiState.avg = 0;
         return;
     }
 
     const totalRevenue = d3.sum(data, d => d.price * d.quantity);
     const uniqueInvoices = new Set(data.map(d => d.invoice_no)).size;
     const uniqueCustomers = new Set(data.map(d => d.customer_id)).size;
-    const avgOrderValue = uniqueInvoices > 0 ? totalRevenue / uniqueInvoices : 0;
+    const avgOrderValue = uniqueInvoices ? totalRevenue / uniqueInvoices : 0;
 
-    document.getElementById("kpi-revenue").textContent = currencyFormat.format(totalRevenue);
-    document.getElementById("kpi-orders").textContent = numberFormat.format(uniqueInvoices);
-    document.getElementById("kpi-customers").textContent = numberFormat.format(uniqueCustomers);
-    document.getElementById("kpi-avg").textContent = currencyFormat.format(avgOrderValue);
+    animateNumber({
+        el: revenueEl,
+        from: kpiState.revenue,
+        to: totalRevenue,
+        format: currencyFormat.format
+    });
+
+    animateNumber({
+        el: ordersEl,
+        from: kpiState.orders,
+        to: uniqueInvoices,
+        format: numberFormat.format
+    });
+
+    animateNumber({
+        el: customersEl,
+        from: kpiState.customers,
+        to: uniqueCustomers,
+        format: numberFormat.format
+    });
+
+    animateNumber({
+        el: avgEl,
+        from: kpiState.avg,
+        to: avgOrderValue,
+        format: currencyFormat.format
+    });
+
+    // update state
+    kpiState.revenue = totalRevenue;
+    kpiState.orders = uniqueInvoices;
+    kpiState.customers = uniqueCustomers;
+    kpiState.avg = avgOrderValue;
 }
 
 
