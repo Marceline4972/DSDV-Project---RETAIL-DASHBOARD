@@ -302,7 +302,7 @@ input[type="number"]:focus {
     align-items: center;
     gap: 15px;
     border: 1px solid #fff;
-    transition: transform 0.2s, box-shadow 0.2s;
+    transition: transform 0.2s, box-shadow 0.2s;   
 }
 
 .kpi-card:hover {
@@ -333,10 +333,18 @@ input[type="number"]:focus {
 
 .kpi-content p {
     margin: 0;
-    font-size: 20px;
+    font-size: 17px;
     font-weight: 800;
     color: var(--text-dark);
+
+    /* Fix vibration when animate number */
+    display: inline-block;
+    min-width: 115px;            
+    text-align: left;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
 }
+
 
 @media (max-width: 1024px) {
     .kpi-board {
@@ -351,3 +359,73 @@ input[type="number"]:focus {
         flex: 1 1 100%;
     }
 }
+
+/* ===== STACKED AREA TOOLTIP ===== */
+.area-tooltip {
+    background: rgba(255, 255, 255, 0.96);
+    backdrop-filter: blur(6px);
+    border-radius: 16px;
+    padding: 16px 18px;
+    min-width: 240px;
+
+    border: 1px solid #dbeafe;
+    box-shadow: 0 18px 40px rgba(59, 130, 246, 0.25);
+
+    font-size: 14px;
+    color: #1e3a8a;
+}
+
+.area-tooltip .title {
+    font-size: 18px;
+    font-weight: 800;
+    margin-bottom: 12px;
+}
+
+.area-tooltip .item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 6px;
+    font-weight: 600;
+}
+
+.area-tooltip .item span:last-child {
+    color: #64748b;
+    font-weight: 500;
+}
+
+.area-tooltip .total {
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px dashed #bfdbfe;
+    font-size: 15px;
+    font-weight: 800;
+}
+
+/* ===== STACKED AREA AXIS ===== */
+#areachart-container .domain {
+    stroke: #94a3b8;
+    stroke-width: 1;
+}
+
+#areachart-container .tick line {
+    stroke: #e2e8f0;
+    stroke-dasharray: 4 4;
+}
+
+#areachart-container .tick text {
+    fill: #64748b;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+/* ===== STACKED AREA LEGEND ===== */
+#areachart-container .legend-item rect {
+    rx: 7;
+}
+
+#areachart-container .legend-item text {
+    font-size: 13px;
+    font-weight: 700;
+    fill: #1e3a8a;
+}
+

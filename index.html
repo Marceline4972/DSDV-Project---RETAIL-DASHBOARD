@@ -68,35 +68,40 @@
 
             <section class="chart-card" id="chart2">
                 <div class="chart-header-simple">
-                    <h2><i class="fa-solid fa-layer-group"></i> Spending Power by Age Group</h2>
+                    <h2 id="area-title">
+                        <i class="fa-solid fa-layer-group"></i>
+                        Shopping Mall Traffic by Age Group
+                    </h2>
+                    <p class="chart-description" id="area-subtitle">
+                        Total income by age cluster
+                    </p>
                 </div>
-                
+
                 <div class="chart-body">
+
+                    <!-- MODE SWITCH -->
                     <div class="mode-switch">
-                        <span class="switch-label">Mode:</span>
+                        <span class="switch-label">View:</span>
+
                         <label class="custom-radio">
-                            <input type="radio" name="areaMode" value="contribution" checked>
-                            <span class="radio-mark"></span> Client Contribution
+                            <input type="radio" name="areaMode" value="traffic" checked>
+                            <span class="radio-mark"></span>
+                            Shopping Mall Traffic
                         </label>
+
                         <label class="custom-radio">
                             <input type="radio" name="areaMode" value="income">
-                            <span class="radio-mark"></span> Total Income
+                            <span class="radio-mark"></span>
+                            Total Income
                         </label>
                     </div>
 
-                    <div class="category-filters-area">
-                        <label for="areaCategorySelect">Select Categories:</label>
-                        <select id="areaCategorySelect" multiple size="4">
-                            <option value="electronics">Electronics</option>
-                            <option value="fashion">Fashion</option>
-                            <option value="grocery">Grocery</option>
-                            <option value="beauty">Beauty</option>
-                        </select>
-                    </div>
-
+                    <!-- STACKED AREA CHART -->
                     <div class="chart-container" id="areachart-container"></div>
+
                 </div>
             </section>
+
 
             <section class="chart-card" id="chart3">
                 <div class="chart-header-simple">
