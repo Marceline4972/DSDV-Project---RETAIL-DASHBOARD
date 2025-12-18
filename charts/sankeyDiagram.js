@@ -36,8 +36,8 @@ const tooltip = d3.select("body")
 let svg, width, height;
 
 export function initSankeyDiagram() {
-    width = 960;
-    height = 520;
+    width = 990;
+    height = 420;
 
     svg = d3.select("#sankey-container")
         .append("svg")
@@ -168,17 +168,22 @@ export function drawSankeyDiagram(data) {
         })
         .on("mouseleave", () => tooltip.style("opacity", 0));
 
-    //LABELS
+// LABELS
     svg.append("g")
         .selectAll("text")
         .data(graph.nodes)
         .enter()
         .append("text")
-        .attr("x", d => d.x0 - 6)
+        .attr("x", d => {
+            // Gender labels on the right of node
+            if (d.type === "gender") return d.x1 + 8;
+            return d.x0 - 6;
+        })
         .attr("y", d => (d.y0 + d.y1) / 2)
-        .attr("text-anchor", "end")
+        .attr("text-anchor", d => d.type === "gender" ? "start" : "end")
         .attr("dominant-baseline", "middle")
         .attr("font-size", "12px")
+        .attr("font-weight", d => d.type === "gender" ? "600" : "400")
         .attr("fill", "#334155")
         .text(d => d.name);
 }
