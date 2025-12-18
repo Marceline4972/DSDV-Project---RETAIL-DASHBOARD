@@ -16,20 +16,21 @@ let filters = {
     ageRange: [null, null]
 };
 
-// add KPI
-const currencyFormat = new Intl.NumberFormat('en-US', {
+// add KPI (Turkish Lira)
+const currencyFormat = new Intl.NumberFormat('tr-TR', {
     style: 'currency',
-    currency: 'USD',
+    currency: 'TRY',
     maximumFractionDigits: 0
 });
-const numberFormat = new Intl.NumberFormat('en-US');
+
+const numberFormat = new Intl.NumberFormat('tr-TR');
 
 function updateKPIs(data) {
     if (!data || data.length === 0) {
-        document.getElementById("kpi-revenue").textContent = "$0";
+        document.getElementById("kpi-revenue").textContent = "₺0";
         document.getElementById("kpi-orders").textContent = "0";
         document.getElementById("kpi-customers").textContent = "0";
-        document.getElementById("kpi-avg").textContent = "$0";
+        document.getElementById("kpi-avg").textContent = "₺0";
         return;
     }
 
