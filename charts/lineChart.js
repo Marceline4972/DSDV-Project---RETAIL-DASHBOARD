@@ -3,6 +3,8 @@ import * as d3 from "d3";
 
 let svg, g, xScale, yScale, xAxisG, yAxisG, linePath;
 let width, height, margin;
+let xScale0, yScale0, zoom;
+let overlay, focusGroup, focusLine, focusDot, tooltip;
 
 let currentGranularity = "daily"; // default
 
@@ -31,6 +33,21 @@ export function initLineChart() {
     g = svg.append("g")
         .attr("transform", `translate(${margin.left},${margin.top})`);
 
+    g.append("defs")
+        .append("clipPath")
+        .attr("id", "clip-line")
+        .append("rect")
+        .attr("width", width)
+        .attr("height", height);
+
+    zoom = d3.zoom()
+        .scaleExtent([0.5, 20]) // zoom in/out limits
+        .translateExtent([[0, 0], [width, height]])
+        .extent([[0, 0], [width, height]])
+        .on("zoom", zoomed);
+
+    svg.call(zoom);
+
     // scales
     xScale = d3.scaleTime().range([0, width]);
     yScale = d3.scaleLinear().range([height, 0]);
@@ -45,7 +62,49 @@ export function initLineChart() {
         .attr("stroke-width", 2)
         .attr("stroke-linejoin", "round")
         .attr("stroke-linecap", "round")
-        .attr("stroke", "#1f77b4");
+        .attr("stroke", "#1f77b4")
+        .attr("clip-path", "url(#clip-line)");
+
+    // Focus group (line + dot)
+    focusGroup = g.append("g")
+        .style("display", "none");
+
+    focusLine = focusGroup.append("line")
+        .attr("y1", 0)
+        .attr("y2", height)
+        .attr("stroke", "#999")
+        .attr("stroke-dasharray", "3,3");
+
+    focusDot = focusGroup.append("circle")
+        .attr("r", 4)
+        .attr("fill", "#1f77b4");
+
+    // Tooltip div (HTML)
+    tooltip = d3.select("#line-chart")
+        .append("div")
+        .style("position", "absolute")
+        .style("background", "rgba(0,0,0,0.75)")
+        .style("color", "#fff")
+        .style("padding", "6px 8px")
+        .style("border-radius", "4px")
+        .style("font-size", "12px")
+        .style("pointer-events", "none")
+        .style("display", "none");
+
+    overlay = g.append("rect")
+        .attr("width", width)
+        .attr("height", height)
+        .attr("fill", "none")
+        .attr("pointer-events", "all")
+        .on("click", handleClick);
+
+    overlay.attr("width", width);
+    focusLine.attr("y2", height);
+
+    svg.on("mouseleave", () => {
+        focusGroup.style("display", "none");
+        tooltip.style("display", "none");
+    });
 
     // wire dropdown - redraw on change
     const freq = document.getElementById("freqSelect");
@@ -66,7 +125,13 @@ export function initLineChart() {
         width = newOuter - margin.left - margin.right;
         svg.attr("width", width + margin.left + margin.right);
         xScale.range([0, width]);
-        // re-render axes + line with last data
+
+        g.select("#clip-line rect").attr("width", width);
+
+        zoom
+            .translateExtent([[0, 0], [width, height]])
+            .extent([[0, 0], [width, height]]);
+
         if (drawLineChart.lastData) drawLineChart(drawLineChart.lastData);
     });
 }
@@ -133,6 +198,61 @@ function aggregateData(data, granularity) {
     return parsed;
 }
 
+function zoomed(event) {
+    if (!xScale0) return;
+
+    const zx = event.transform.rescaleX(xScale0);
+    xScale.domain(zx.domain());
+
+    xAxisG.call(d3.axisBottom(xScale));
+    yAxisG.call(d3.axisLeft(yScale)); // unchanged
+
+    const lineGen = d3.line()
+        .x(d => xScale(d.date))
+        .y(d => yScale(d.value))
+        .curve(d3.curveMonotoneX);
+
+    linePath.attr("d", lineGen);
+}
+
+function handleClick(event) {
+    if (!drawLineChart.aggData?.length) return;
+
+    const data = drawLineChart.aggData;
+
+    const [mx] = d3.pointer(event);
+    const date = xScale.invert(mx);
+
+    // Nearest point search
+    const bisect = d3.bisector(d => d.date).left;
+    const i = bisect(data, date);
+    const d0 = data[i - 1];
+    const d1 = data[i];
+    const d = !d0 ? d1
+        : !d1 ? d0
+            : (date - d0.date > d1.date - date ? d1 : d0);
+
+    if (!d) return;
+
+    const x = xScale(d.date);
+    const y = yScale(d.value);
+
+    // Show focus
+    focusGroup.style("display", null);
+    focusLine.attr("x1", x).attr("x2", x);
+    focusDot.attr("cx", x).attr("cy", y);
+
+    // Tooltip
+    tooltip
+        .style("display", "block")
+        .style("left", `${x + margin.left + 10}px`)
+        .style("top", `${y + margin.top - 10}px`)
+        .html(`
+        <strong>${d3.timeFormat("%Y-%m-%d")(d.date)}</strong><br/>
+        Sale: ${d3.format(",.2f")(d.value)}
+      `);
+}
+
 // draw / update the chart
 export function drawLineChart(data) {
     // Save last data for resize/redraw
@@ -152,6 +272,7 @@ export function drawLineChart(data) {
     }
 
     const agg = aggregateData(data, currentGranularity);
+    drawLineChart.aggData = agg;
 
     if (!agg.length) {
         linePath.datum([]).transition().duration(600).attr("d", null);
@@ -163,6 +284,8 @@ export function drawLineChart(data) {
     const yMax = d3.max(agg, d => d.value);
     xScale.domain(xDomain);
     yScale.domain([0, yMax === undefined ? 1 : yMax]).nice();
+    xScale0 = xScale.copy();
+    yScale0 = yScale.copy();
 
     // axes transitions
     const xAxis = d3.axisBottom(xScale).ticks(Math.min(10, agg.length));
