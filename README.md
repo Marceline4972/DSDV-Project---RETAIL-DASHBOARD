@@ -22,7 +22,7 @@ node -v
 
 ### 1️⃣ Clone the repository
 ```bash
-git https://github.com/Marceline4972/DSDV-Project---RETAIL-DASHBOARD.git
+git clone https://github.com/Marceline4972/DSDV-Project---RETAIL-DASHBOARD.git
 cd DSDV-Project---RETAIL-DASHBOARD
 ```
 2️⃣ Install dependencies

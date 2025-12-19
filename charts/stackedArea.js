@@ -441,6 +441,7 @@ g.selectAll(".layer")
                 ${keys.map(k => `
                     <div style="color:${color(k)}">
                         ${k}: ${formatNumber(row[k])}
+                        (${((row[k] / total) * 100).toFixed(1)}%)
                     </div>
                 `).join("")}
                 <div><b>Total:</b> ${formatNumber(total)}</div>
